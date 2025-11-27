@@ -1648,7 +1648,7 @@ usb_ep *dwc3_gadget_match_ep(struct usb_gadget *gadget,
 		 */
 		if (IS_ENABLED(CONFIG_MACH_IMX) && IS_ENABLED(CONFIG_XPL_BUILD))
 			return dwc3_find_ep(gadget, "ep1in");
-		return dwc3_find_ep(gadget, "ep3in");
+		return dwc3_find_ep(gadget, "ep1in");
 	}
 
 	return NULL;
