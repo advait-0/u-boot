@@ -12,6 +12,10 @@
 
 #define CFG_SYS_UBOOT_BASE	(QSPI0_AMBA_BASE + CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR * 512)
 
+/* Keep clocks in SPL DT (do not remove clocks/clock-names) */
+#undef CONFIG_OF_SPL_REMOVE_PROPS
+#define CONFIG_OF_SPL_REMOVE_PROPS "interrupt-parent interrupts"
+
 #if defined(CONFIG_CMD_NET)
 #define CFG_FEC_MXC_PHYADDR          1
 
@@ -22,11 +26,11 @@
 #define CFG_SYS_INIT_RAM_ADDR	0x40000000
 #define CFG_SYS_INIT_RAM_SIZE	0x80000
 
-/* Totally 6GB DDR */
+/* Totally 4GB DDR */
 #define CFG_SYS_SDRAM_BASE		0x40000000
 #define PHYS_SDRAM			0x40000000
 #define PHYS_SDRAM_SIZE			0xC0000000	/* 3 GB */
 #define PHYS_SDRAM_2			0x100000000
-#define PHYS_SDRAM_2_SIZE		0xC0000000	/* 3 GB */
+#define PHYS_SDRAM_2_SIZE		0x40000000	/* 1 GB */
 
 #endif

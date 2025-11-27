@@ -21,12 +21,65 @@
 #include <power/pca9450.h>
 #include <dm/uclass.h>
 #include <dm/device.h>
+#include <asm/mach-imx/iomux-v3.h>
+#include <asm/arch/imx8mp_pins.h>
+#include <asm/arch/imx-regs.h>
+#include <init.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
+#define UART_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_FSEL1)
+#define WDOG_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_ODE | PAD_CTL_PUE | PAD_CTL_PE)
+
+static iomux_v3_cfg_t const uart_pads[] = {
+	MX8MP_PAD_UART2_RXD__UART2_DCE_RX | MUX_PAD_CTRL(UART_PAD_CTRL),
+	MX8MP_PAD_UART2_TXD__UART2_DCE_TX | MUX_PAD_CTRL(UART_PAD_CTRL),
+};
+
+static iomux_v3_cfg_t const wdog_pads[] = {
+	MX8MP_PAD_GPIO1_IO02__WDOG1_WDOG_B  | MUX_PAD_CTRL(WDOG_PAD_CTRL),
+};
+
+
+int board_early_init_f(void)
+{
+	struct wdog_regs *wdog = (struct wdog_regs *)WDOG1_BASE_ADDR;
+
+	imx_iomux_v3_setup_multiple_pads(wdog_pads, ARRAY_SIZE(wdog_pads));
+
+	set_wdog_reset(wdog);
+
+	imx_iomux_v3_setup_multiple_pads(uart_pads, ARRAY_SIZE(uart_pads));
+
+	init_uart_clk(1);
+
+	return 0;
+}
+
 int spl_board_boot_device(enum boot_device boot_dev_spl)
 {
+#ifdef CONFIG_SPL_BOOTROM_SUPPORT
 	return BOOT_DEVICE_BOOTROM;
+#else
+	switch (boot_dev_spl) {
+	case SD1_BOOT:
+	case MMC1_BOOT:
+	case SD2_BOOT:
+	case MMC2_BOOT:
+		return BOOT_DEVICE_MMC1;
+	case SD3_BOOT:
+	case MMC3_BOOT:
+		return BOOT_DEVICE_MMC2;
+	case QSPI_BOOT:
+		return BOOT_DEVICE_NOR;
+	case NAND_BOOT:
+		return BOOT_DEVICE_NAND;
+	case USB_BOOT:
+		return BOOT_DEVICE_BOARD;
+	default:
+		return BOOT_DEVICE_NONE;
+	}
+#endif
 }
 
 void spl_dram_init(void)
@@ -44,11 +97,13 @@ void spl_board_init(void)
 	 * setting done. Default is 400Mhz (system_pll1_800m with div = 2)
 	 * set by ROM for ND VDD_SOC
 	 */
+#if defined(CONFIG_IMX8M_LPDDR4) && !defined(CONFIG_IMX8M_VDD_SOC_850MV)
 	clock_enable(CCGR_GIC, 0);
 	clock_set_target_val(GIC_CLK_ROOT, CLK_ROOT_ON | CLK_ROOT_SOURCE_SEL(5));
 	clock_enable(CCGR_GIC, 1);
 
 	puts("Normal Boot\n");
+#endif
 }
 
 #define I2C_PAD_CTRL (PAD_CTL_DSE6 | PAD_CTL_HYS | PAD_CTL_PUE | PAD_CTL_PE)
@@ -83,6 +138,7 @@ int power_init_board(void)
 	/* BUCKxOUT_DVS0/1 control BUCK123 output */
 	pmic_reg_write(dev, PCA9450_BUCK123_DVS, 0x29);
 
+#ifdef CONFIG_IMX8M_LPDDR4
 	/*
 	 * Increase VDD_SOC to typical value 0.95V before first
 	 * DRAM access, set DVS1 to 0.85V for suspend.
@@ -104,6 +160,13 @@ int power_init_board(void)
 	 */
 
 	pmic_reg_write(dev, PCA9450_BUCK2OUT_DVS0, 0x1C);
+#elif defined(CONFIG_IMX8M_DDR4)
+	/* DDR4 runs at 3200MTS, uses default ND 0.85v for VDD_SOC and VDD_ARM */
+	pmic_reg_write(dev, PCA9450_BUCK1CTRL, 0x59);
+
+	/* Set NVCC_DRAM to 1.2v for DDR4 */
+	pmic_reg_write(dev, PCA9450_BUCK6OUT, 0x18);
+#endif
 
 	return 0;
 }
@@ -122,16 +185,26 @@ int board_fit_config_name_match(const char *name)
 /* Do not use BSS area in this phase */
 void board_init_f(ulong dummy)
 {
+	struct udevice *dev;
 	int ret;
-
+	// memset(__bss_start, 0, __bss_end - __bss_start);
 	arch_cpu_init();
-
+	board_early_init_f();
+	timer_init();
 	init_uart_clk(1);
 
 	ret = spl_early_init();
 	if (ret) {
 		debug("spl_init() failed: %d\n", ret);
 		hang();
+	}
+
+	ret = uclass_get_device_by_name(UCLASS_CLK,
+					"clock-controller@30380000",
+					&dev);
+	if (ret < 0) {
+		printf("Failed to find clock node. Check device tree\n");
+		// hang();
 	}
 
 	preloader_console_init();
@@ -142,4 +215,5 @@ void board_init_f(ulong dummy)
 
 	/* DDR initialization */
 	spl_dram_init();
+	board_init_r(NULL, 0);
 }

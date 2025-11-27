@@ -5,6 +5,7 @@
 #
 
 obj-y += imx8mp_evk.o
+obj-spl-y += imx8mp_evk.o
 
 ifdef CONFIG_XPL_BUILD
 obj-y += spl.o
