@@ -99,6 +99,7 @@ obj-$(CONFIG_VIDEO_ZYNQMP_DPSUB) += zynqmp/
 obj-$(CONFIG_MXC_EPDC) += mxc_epdc_fb.o
 obj-$(CONFIG_VIDEO_LT8912B) += lontium-lt8912b.o
 obj-$(CONFIG_VIDEO_WAVESHARE_DSI) += panel-waveshare-dsi.o
+obj-$(CONFIG_VIDEO_AMOLED_DDIC_CH13726A) += ddic-ch13726a.o
 
 obj-y += bridge/
 obj-y += sunxi/
