@@ -88,7 +88,7 @@ obj-$(CONFIG_VIDEO_SANDBOX_SDL) += sandbox_sdl.o
 obj-$(CONFIG_VIDEO_SIMPLE) += simplefb.o
 obj-$(CONFIG_VIDEO_VESA) += vesa.o
 obj-$(CONFIG_VIDEO_SEPS525) += seps525.o
-obj-$(CONFIG_VIDEO_ZYNQMP_DPSUB) += zynqmp/
+obj-$(CONFIG_VIDEO_AMOLED_DDIC_CH13726A) += ddic-ch13726a.o
 
 obj-y += bridge/
 obj-y += sunxi/
