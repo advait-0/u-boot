@@ -1,0 +1,79 @@
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * Mecha Comet developer menu layout
+ */
+
+/dts-v1/;
+
+/* see expo_ids.h for the IDs */
+
+/ {
+	dynamic-start = <ID_DYNAMIC_START>;
+
+	scenes {
+		main {
+			id = <ID_SCENE1>;
+
+			title-id = <ID_SCENE1_TITLE>;
+
+			prompt = "[Vol +] Up  |  [Vol -] Down  |  [Home] Select  |  [Power] Exit";
+
+			dev-menu {
+				type = "menu";
+				id = <ID_DEV_MENU>;
+
+				title = "Boot to:  ";
+
+				item-label =
+					"U-Boot Terminal",
+					"Fastboot Mode",
+					"Save and Exit";
+
+				item-id =
+					<ID_MENU_UBOOT>,
+					<ID_MENU_FASTBOOT>,
+					<EXPOID_SAVE>;
+
+				item-value = <0 1 2>;
+
+				start-bit = <0x400>;
+				bit-length = <3>;
+			};
+		};
+	};
+
+	strings {
+		title {
+			id = <ID_SCENE1_TITLE>;
+			value = "       Mecha Comet - Developer Menu                   
+
+
+
+
+
+
+
+
+
+
+
+                                          
+                 BBB    BBB                
+                 BBB  BBBBB                
+            BB   BBB BBBB                  
+           BBBBB BBBBBBBBBBBBBBB           
+             BBBBBBBBBBBBBBBBBBB           
+               BBBBB   BBBBB               
+           BBBBBBBBBBBBBBBBBBB             
+           BBBBBBBBBBBBBBB BBBBB           
+                  BBBB BBB   BB            
+                BBBBB  BBB                 
+                BBB    BBB            
+                                           
+                                           
+                                                      		
+			
+			";
+		};
+	};
+};
