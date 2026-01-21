@@ -26,11 +26,16 @@
 #define CFG_SYS_INIT_RAM_ADDR	0x40000000
 #define CFG_SYS_INIT_RAM_SIZE	0x80000
 
-/* Totally 4GB DDR */
+/* Totally 4GB or 8GB DDR */
 #define CFG_SYS_SDRAM_BASE		0x40000000
 #define PHYS_SDRAM			0x40000000
 #define PHYS_SDRAM_SIZE			0xC0000000	/* 3 GB */
 #define PHYS_SDRAM_2			0x100000000
-#define PHYS_SDRAM_2_SIZE		0x40000000	/* 1 GB */
+
+#ifdef CONFIG_IMX8M_LPDDR4_8GB
+#define PHYS_SDRAM_2_SIZE  0x140000000 /* 5 GB */
+#else
+#define PHYS_SDRAM_2_SIZE  0x40000000	/* 1 GB */
+#endif
 
 #endif
