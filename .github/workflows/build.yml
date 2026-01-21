@@ -25,7 +25,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             build-essential \
-            gcc-aarch64-linux-gnu \
             libgnutls28-dev \
             bison \
             flex \
@@ -34,13 +33,13 @@ jobs:
             python3-setuptools \
             swig \
             wget \
-            git
+            git \
+            efitools \
+            uuid-dev
 
       - name: Build U-Boot
         working-directory: u-boot
         run: |
-          export ARCH=arm64
-          export CROSS_COMPILE=aarch64-linux-gnu-
           make mecha-comet-imx8mp-${{ matrix.variant }}_defconfig
           make -j$(nproc)
 
