@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     strategy:
       matrix:
-        variant: [4gb, 8gb]
+        variant: [2gb, 4gb, 8gb]
     
     steps:
       - name: Checkout U-Boot
