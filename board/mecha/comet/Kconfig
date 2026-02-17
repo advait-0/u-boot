@@ -14,6 +14,9 @@ choice
 	prompt "LPDDR4 DRAM size"
 	default IMX8M_LPDDR4_4GB
 
+config IMX8M_LPDDR4_2GB
+	bool "2GB LPDDR4 DRAM"
+
 config IMX8M_LPDDR4_4GB
 	bool "4GB LPDDR4 DRAM"
 

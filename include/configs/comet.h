@@ -21,8 +21,14 @@
 
 #endif
 
+#ifdef CONFIG_IMX8M_LPDDR4_2GB
 /* Link Definitions */
-
+#define CFG_SYS_INIT_RAM_ADDR        0x40000000
+#define CFG_SYS_INIT_RAM_SIZE        0x200000
+#define CFG_SYS_SDRAM_BASE           0x40000000
+#define PHYS_SDRAM                      0x40000000
+#define PHYS_SDRAM_SIZE         0x80000000  /* 2 GB */
+#else
 #define CFG_SYS_INIT_RAM_ADDR	0x40000000
 #define CFG_SYS_INIT_RAM_SIZE	0x80000
 
@@ -31,10 +37,13 @@
 #define PHYS_SDRAM			0x40000000
 #define PHYS_SDRAM_SIZE			0xC0000000	/* 3 GB */
 #define PHYS_SDRAM_2			0x100000000
+#endif
+
 
 #ifdef CONFIG_IMX8M_LPDDR4_8GB
 #define PHYS_SDRAM_2_SIZE  0x140000000 /* 5 GB */
-#else
+#endif
+#ifdef CONFIG_IMX8M_LPDDR4_4GB
 #define PHYS_SDRAM_2_SIZE  0x40000000	/* 1 GB */
 #endif
 

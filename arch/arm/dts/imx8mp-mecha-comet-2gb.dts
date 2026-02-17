@@ -1,0 +1,45 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright 2019 NXP
+ */
+
+/dts-v1/;
+
+#include <dt-bindings/phy/phy-imx8-pcie.h>
+#include <smbios_def.h>
+#include "imx8mp-mecha-comet.dtsi"
+#include "imx8mp-mecha-comet-u-boot.dtsi"
+
+/ {
+	smbios {
+		compatible = "u-boot,sysinfo-smbios";
+
+		smbios {
+			system {
+				manufacturer = "Mecha Systems Pvt. Ltd.";
+				product = "Mecha Comet";
+				sku = "IX8MR02L4SXXX";
+			};
+
+			baseboard {
+				manufacturer = "Mecha Systems Pvt. Ltd.";
+				product = "Mecha Comet";
+				version = "B00";
+				feature-flags = <SMBIOS_BOARD_FEAT_HOST_BOARD>;
+				board-type = <SMBIOS_BOARD_TYPE_MOTHERBOARD>;
+			};
+
+			chassis {
+				manufacturer = "Mecha Systems Pvt. Ltd.";
+				chassis-type = "handheld";
+			};
+		};
+	};
+
+
+	memory@40000000 {
+		device_type = "memory";
+		reg = <0x0 0x40000000 0 0x80000000>;
+	};
+
+};
