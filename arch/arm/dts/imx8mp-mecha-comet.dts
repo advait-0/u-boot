@@ -53,8 +53,7 @@
 
 	memory@40000000 {
 		device_type = "memory";
-		reg = <0x0 0x40000000 0 0xc0000000>,
-		      <0x1 0x00000000 0 0x40000000>;
+		reg = reg = <0x0 0x40000000 0 0x80000000>;
 	};
 
 	native-hdmi-connector {
@@ -209,26 +208,6 @@
 		};
 	};
 
-	sound-wm8960 {
-		compatible = "fsl,imx-audio-wm8960";
-		audio-asrc = <&easrc>;
-		audio-codec = <&wm8960>;
-		audio-cpu = <&sai3>;
-		audio-routing = "Headphone Jack", "HP_L",
-			"Headphone Jack", "HP_R",
-			"Ext Spk", "SPK_LP",
-			"Ext Spk", "SPK_LN",
-			"Ext Spk", "SPK_RP",
-			"Ext Spk", "SPK_RN",
-			"LINPUT1", "Mic Jack",
-			"LINPUT3", "Mic Jack",
-			"Mic Jack", "MICB";
-		hp-det-gpio = <&gpio4 28 GPIO_ACTIVE_HIGH>;
-		model = "wm8960-audio";
-		pinctrl-0 = <&pinctrl_hpdet>;
-		pinctrl-names = "default";
-	};
-
 	sound-xcvr {
 		compatible = "fsl,imx-audio-card";
 		model = "imx-audio-xcvr";
@@ -261,6 +240,24 @@
 			compatible = "shared-dma-pool";
 			reg = <0 0x94300000 0 0x100000>;
 			no-map;
+		};
+	};
+
+	panel@0{
+		compatible = "ch13726a,rp5";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_mipi_dsi_en>;
+		reset-gpio = <&gpio4 9 GPIO_ACTIVE_HIGH>;
+		video-mode = <0>;	/* 0: burst mode
+					 * 1: non-burst mode with sync event
+					 * 2: non-burst mode with sync pulse
+					 */
+		status = "okay";
+
+		port {
+			ddic_from_dsim: endpoint {
+				remote-endpoint = <&dsim_to_ddic>;
+			};
 		};
 	};
 };
@@ -684,12 +681,9 @@
 	status = "okay";
 
 	ports {
-		port@1 {
-			reg = <1>;
-
-			dsi_out: endpoint {
-				remote-endpoint = <&adv7535_in>;
-				data-lanes = <1 2 3 4>;
+		port@0 {
+			dsim_to_ddic: endpoint {
+				remote-endpoint = <&ddic_from_dsim>;
 			};
 		};
 	};
@@ -938,6 +932,12 @@
 			MX8MP_IOMUXC_HDMI_DDC_SCL__HDMIMIX_HDMI_SCL	0x1c2
 			MX8MP_IOMUXC_HDMI_DDC_SDA__HDMIMIX_HDMI_SDA	0x1c2
 			MX8MP_IOMUXC_HDMI_CEC__HDMIMIX_HDMI_CEC		0x10
+		>;
+	};
+
+	pinctrl_mipi_dsi_en: mipidsiengrp {
+		fsl,pins = <
+			MX8MP_IOMUXC_SAI1_RXD7__GPIO4_IO09	0x16
 		>;
 	};
 
