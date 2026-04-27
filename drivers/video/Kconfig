@@ -974,7 +974,8 @@ config VIDEO_DSI_HOST_SANDBOX
 	  (panel, bridge).
 
 config VIDEO_DW_MIPI_DSI
-	bool
+    bool "Synopsys DW MIPI DSI support"
+    depends on VIDEO
 	select VIDEO_MIPI_DSI
 	help
 	  Enables the common driver code for the Synopsis Designware
@@ -982,6 +983,11 @@ config VIDEO_DW_MIPI_DSI
 	  As this does not provide any functionality by itself (but
 	  rather requires a SoC-specific glue driver to call it), it
 	  can not be enabled from the configuration menu.
+
+config VIDEO_LINK
+    bool "Video pipeline linking support"
+    depends on VIDEO
+    default y
 
 config VIDEO_SIMPLE
 	bool "Simple display driver for preconfigured display"

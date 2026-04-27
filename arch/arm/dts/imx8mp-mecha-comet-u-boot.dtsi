@@ -11,6 +11,11 @@
 		wdt = <&wdog1>;
 		bootph-pre-ram;
 	};
+
+	dsi_host: dsi-host {
+		compatible = "samsung,sec-mipi-dsi";
+		status = "okay";
+	};
 };
 
 &pinctrl_i2c1 {

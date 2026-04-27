@@ -68,6 +68,9 @@ struct driver_info;
 /* Driver plat has been read. Cleared when the device is removed */
 #define DM_FLAG_PLATDATA_VALID		(1 << 12)
 
+/* DM should ignore the assign default clocks for this driver */
+#define DM_FLAG_IGNORE_DEFAULT_CLKS		(1 << 13)
+
 /*
  * Device is removed without switching off its power domain. This might
  * be required, i. e. for serial console (debug) output when booting OS.
@@ -81,10 +84,7 @@ struct driver_info;
  */
 #define DM_FLAG_VITAL			(1 << 14)
 
-/* Device must be probed after it was bound. This flag is per-device and does
- * nothing if set on a U_BOOT_DRIVER() definition. Apply it with
- * dev_or_flags(dev, DM_FLAG_PROBE_AFTER_BIND) in the devices bind function.
- */
+/* Device must be probed after it was bound */
 #define DM_FLAG_PROBE_AFTER_BIND	(1 << 15)
 
 /*

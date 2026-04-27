@@ -7,6 +7,13 @@
 #include <config.h>
 #include <efi_loader.h>
 #include <env.h>
+#include <dm/uclass.h>
+#include <video_link.h>  
+#include <dm.h>
+#include <video.h>
+#include <panel.h>
+#include <video_bridge.h>
+#include <dsi_host.h>
 
 #if CONFIG_IS_ENABLED(EFI_HAVE_CAPSULE_SUPPORT)
 #define IMX_BOOT_IMAGE_GUID \
@@ -28,16 +35,30 @@ struct efi_capsule_update_info update_info = {
 };
 #endif /* EFI_HAVE_CAPSULE_SUPPORT */
 
+#include <clk.h>
+
+int board_init(void)
+{
+    struct clk clk;
+
+    clk_get_by_name(NULL, "video_pll1_out", &clk);
+    clk_enable(&clk);
+
+    clk_get_by_name(NULL, "media_disp1_pix", &clk);
+    clk_enable(&clk);
+
+    clk_get_by_name(NULL, "media_disp1_pix_root_clk", &clk);
+    clk_enable(&clk);
+
+    return 0;
+}
+
+int board_early_init_r(void)
+{
+	return 0;
+}
+
 int board_late_init(void)
 {
-#if CONFIG_IS_ENABLED(ENV_IS_IN_MMC)
-	board_late_mmc_env_init();
-#endif
-
-#ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
-	env_set("board_name", "Comet");
-	env_set("board_rev", "Rev0");
-#endif
-
-	return 0;
+    return 0;
 }

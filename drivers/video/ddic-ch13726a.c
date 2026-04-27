@@ -86,6 +86,10 @@ static int ch13726a_panel_enable_backlight(struct udevice *dev)
 	struct mipi_dsi_device *device = plat->device;
 	int ret;
 
+	if (!device) {
+        dev_err(dev, "mipi dsi device not attached\n");
+        return -ENODEV;
+    }
 	device->lanes = plat->lanes;
 	device->format = plat->format;
 	device->mode_flags = plat->mode_flags;
@@ -158,6 +162,7 @@ static int ch13726a_panel_of_to_plat(struct udevice *dev)
 
 static int ch13726a_panel_probe(struct udevice *dev)
 {
+	printf("PANEL PROBE START\n");
 	struct ch13726a_panel_priv *priv = dev_get_priv(dev);
 	struct mipi_dsi_panel_plat *plat = dev_get_plat(dev);
 	int ret;

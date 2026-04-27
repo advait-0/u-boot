@@ -15,6 +15,7 @@
 #include <video_bridge.h>
 #include <asm/io.h>
 #include <linux/delay.h>
+#include <dm/uclass.h>
 
 #define LDB_CTRL_CH0_ENABLE BIT(0)
 #define LDB_CTRL_CH1_ENABLE BIT(2)
@@ -77,8 +78,8 @@ static int imx_ldb_of_to_plat(struct udevice *dev)
 	struct imx_ldb_priv *priv = dev_get_priv(dev);
 	int ret;
 
-	uclass_get_device_by_endpoint(UCLASS_PANEL, dev, 1, -1, &priv->lvds1);
-	uclass_get_device_by_endpoint(UCLASS_PANEL, dev, 2, -1, &priv->lvds2);
+	// uclass_get_device_by_endpoint(UCLASS_PANEL, dev, 1, -1, &priv->lvds1);
+	// uclass_get_device_by_endpoint(UCLASS_PANEL, dev, 2, -1, &priv->lvds2);
 	if (!priv->lvds1 && !priv->lvds2) {
 		debug("ldb: No remote panel for '%s' (ret=%d)\n",
 		      dev_read_name(dev), ret);

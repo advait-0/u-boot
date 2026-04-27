@@ -842,18 +842,44 @@ struct dsi_host_ops dw_mipi_dsi_ops = {
 	.enable = dw_mipi_dsi_enable,
 };
 
-static int dw_mipi_dsi_probe(struct udevice *dev)
+static int dummy_init(void *priv)
 {
 	return 0;
 }
 
-U_BOOT_DRIVER(dw_mipi_dsi) = {
-	.name			= "dw_mipi_dsi",
-	.id			= UCLASS_DSI_HOST,
-	.probe			= dw_mipi_dsi_probe,
-	.ops			= &dw_mipi_dsi_ops,
-	.priv_auto	= sizeof(struct dw_mipi_dsi),
+static int dummy_get_lane_mbps(void *priv,
+			      struct display_timing *timings,
+			      u32 lanes, u32 format,
+			      unsigned int *lane_mbps)
+{
+	*lane_mbps = 500; /* arbitrary safe value */
+	return 0;
+}
+
+static const struct mipi_dsi_phy_ops dummy_phy_ops = {
+	.init = dummy_init,
+	.get_lane_mbps = dummy_get_lane_mbps,
 };
+
+/* ---- Probe ---- */
+
+static int dw_mipi_dsi_probe(struct udevice *dev)
+{
+	struct dw_mipi_dsi *dsi = dev_get_priv(dev);
+
+	if (!dsi)
+		return -ENOMEM;
+
+	/*
+	 * Attach dummy PHY ops so that
+	 * dw_mipi_dsi_init() doesn't fail with -ENODEV
+	 */
+	dsi->phy_ops = &dummy_phy_ops;
+
+	dev_info(dev, "dw_mipi_dsi: dummy PHY attached\n");
+
+	return 0;
+}
 
 MODULE_AUTHOR("Chris Zhong <zyw@rock-chips.com>");
 MODULE_AUTHOR("Philippe Cornu <philippe.cornu@st.com>");
@@ -861,3 +887,14 @@ MODULE_AUTHOR("Yannick Fertré <yannick.fertre@st.com>");
 MODULE_DESCRIPTION("DW MIPI DSI host controller driver");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:dw-mipi-dsi");
+
+U_BOOT_DRIVER(dw_mipi_dsi) = {
+	.name		= "dw_mipi_dsi",
+	.id		= UCLASS_DSI_HOST,
+	.of_match	= (struct udevice_id[]) {
+		{ .compatible = "snps,dw-mipi-dsi" },
+		{ }
+	},
+	.probe		= dw_mipi_dsi_probe,
+	.priv_auto	= sizeof(struct dw_mipi_dsi),
+};

@@ -31,12 +31,6 @@
 		compatible = "hdmi-connector";
 		label = "hdmi";
 		type = "a";
-
-		port {
-			hdmi_connector_in: endpoint {
-				remote-endpoint = <&adv7535_out>;
-			};
-		};
 	};
 
 	gpio-leds {
@@ -53,7 +47,7 @@
 
 	memory@40000000 {
 		device_type = "memory";
-		reg = reg = <0x0 0x40000000 0 0x80000000>;
+		reg = <0x0 0x40000000 0 0x80000000>;
 	};
 
 	native-hdmi-connector {
@@ -553,42 +547,6 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c2>;
 	status = "okay";
-
-	hdmi@3d {
-		compatible = "adi,adv7535";
-		reg = <0x3d>;
-		interrupt-parent = <&gpio1>;
-		interrupts = <9 IRQ_TYPE_EDGE_FALLING>;
-		adi,dsi-lanes = <4>;
-		avdd-supply = <&reg_buck5>;
-		dvdd-supply = <&reg_buck5>;
-		pvdd-supply = <&reg_buck5>;
-		a2vdd-supply = <&reg_buck5>;
-		v3p3-supply = <&reg_vext_3v3>;
-		v1p2-supply = <&reg_buck5>;
-
-		ports {
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			port@0 {
-				reg = <0>;
-
-				adv7535_in: endpoint {
-					remote-endpoint = <&dsi_out>;
-				};
-			};
-
-			port@1 {
-				reg = <1>;
-
-				adv7535_out: endpoint {
-					remote-endpoint = <&hdmi_connector_in>;
-				};
-			};
-
-		};
-	};
 };
 
 &i2c3 {
@@ -659,11 +617,17 @@
 };
 
 &lcdif1 {
-	status = "okay";
+    status = "okay";
+
+    port {
+        lcdif1_to_dsim: endpoint {
+            remote-endpoint = <&dsim_from_lcdif1>;
+        };
+    };
 };
 
 &lcdif3 {
-	status = "okay";
+	status = "disabled";
 };
 
 &micfil {
@@ -677,16 +641,21 @@
 };
 
 &mipi_dsi {
-	samsung,esc-clock-frequency = <10000000>;
-	status = "okay";
+    status = "okay";
 
-	ports {
-		port@0 {
-			dsim_to_ddic: endpoint {
-				remote-endpoint = <&ddic_from_dsim>;
-			};
-		};
-	};
+    ports {
+        port@0 {
+            dsim_from_lcdif1: endpoint {
+                remote-endpoint = <&lcdif1_to_dsim>;
+            };
+        };
+
+        port@1 {
+            dsim_to_ddic: endpoint {
+                remote-endpoint = <&ddic_from_dsim>;
+            };
+        };
+    };
 };
 
 &mu2 {
@@ -698,20 +667,6 @@
 	clocks = <&pcie0_refclk>;
 	clock-names = "ref";
 	status = "okay";
-};
-
-&pcie0 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_pcie0>;
-	reset-gpio = <&gpio2 7 GPIO_ACTIVE_LOW>;
-	vpcie-supply = <&reg_pcie0>;
-	status = "okay";
-};
-
-&pcie0_ep {
-	pinctrl-0 = <&pinctrl_pcie0>;
-	pinctrl-names = "default";
-	status = "disabled";
 };
 
 &pwm1 {

@@ -523,7 +523,10 @@ int device_probe(struct udevice *dev)
 	    !(drv->flags & DM_FLAG_DEFAULT_PD_CTRL_OFF)) {
 		ret = dev_power_domain_on(dev);
 		if (ret)
+		{
+			printf("power domain fail for device: %s\n", dev->name);
 			goto fail;
+		}
 	}
 
 	/*
@@ -544,8 +547,11 @@ int device_probe(struct udevice *dev)
 	if (dev->parent && device_get_uclass_id(dev) != UCLASS_PINCTRL) {
 		ret = pinctrl_select_state(dev, "default");
 		if (ret && ret != -ENOSYS)
+		{
+			printf("failed to configure default pinctrl:\n");
 			log_debug("Device '%s' failed to configure default pinctrl: %d (%s)\n",
 				  dev->name, ret, errno_str(ret));
+		}
 	}
 
 	if (CONFIG_IS_ENABLED(IOMMU) && dev->parent &&
@@ -566,18 +572,24 @@ int device_probe(struct udevice *dev)
 	if (dev->parent && dev->parent->driver->child_pre_probe) {
 		ret = dev->parent->driver->child_pre_probe(dev);
 		if (ret)
+		{
+			printf("parent child stuff");
 			goto fail;
+		}
 	}
 
 	/* Only handle devices that have a valid ofnode */
-	if (dev_has_ofnode(dev)) {
+	if (dev_has_ofnode(dev) && !(dev->driver->flags & DM_FLAG_IGNORE_DEFAULT_CLKS)) {
 		/*
 		 * Process 'assigned-{clocks/clock-parents/clock-rates}'
 		 * properties
 		 */
 		ret = clk_set_defaults(dev, CLK_DEFAULTS_PRE);
 		if (ret)
+		{
+			printf("clocks failure\n");
 			goto fail;
+		}
 	}
 
 	if (drv->probe) {
@@ -588,7 +600,10 @@ int device_probe(struct udevice *dev)
 
 	ret = uclass_post_probe_device(dev);
 	if (ret)
+	{
+		printf("uclass pre probe failure");
 		goto fail_uclass;
+	}
 
 	if (dev->parent && device_get_uclass_id(dev) == UCLASS_PINCTRL) {
 		ret = pinctrl_select_state(dev, "default");
