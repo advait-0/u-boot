@@ -93,6 +93,7 @@ static int imx_sec_dsim_set_backlight(struct udevice *dev, int percent)
 
 static int imx_sec_dsim_probe(struct udevice *dev)
 {
+	printf("Entered imx sec dsim probe\n");
 	struct clk clk;
 	int ret;
 
@@ -128,6 +129,7 @@ static int imx_sec_dsim_remove(struct udevice *dev)
 
 static int imx_sec_dsim_check_timing(struct udevice *dev, struct display_timing *timing)
 {
+	printf("Entered imx_sec_dsim_check_timing\n");
 	struct imx_sec_dsim_priv *priv = dev_get_priv(dev);
 
 	/* DSI force the Polarities as high */

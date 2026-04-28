@@ -254,7 +254,7 @@ static int lcdifv3_of_get_timings(struct udevice *dev,
 {
 	int ret = 0;
 	struct lcdifv3_priv *priv = dev_get_priv(dev);
-	printf("Entered lcdifv3_of_get_timings");
+	printf("Entered lcdifv3_of_get_timings\n");
 	priv->disp_dev = video_link_get_next_device(dev);
 	if (!priv->disp_dev ||
 		(device_get_uclass_id(priv->disp_dev) != UCLASS_VIDEO_BRIDGE

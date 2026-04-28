@@ -41,6 +41,12 @@ int board_init(void)
 {
     struct clk clk;
 
+	clk_get_by_name(NULL, "media_mipi_phy1_ref", &clk);
+	clk_enable(&clk);
+
+	clk_get_by_name(NULL, "media_mipi_phy1_ref_root_clk", &clk);
+	clk_enable(&clk);
+
     clk_get_by_name(NULL, "video_pll1_out", &clk);
     clk_enable(&clk);
 
@@ -49,7 +55,7 @@ int board_init(void)
 
     clk_get_by_name(NULL, "media_disp1_pix_root_clk", &clk);
     clk_enable(&clk);
-
+	
     return 0;
 }
 

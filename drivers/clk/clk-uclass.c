@@ -391,12 +391,18 @@ int clk_set_defaults(struct udevice *dev, enum clk_defaults_stage stage)
 	debug("%s(%s)\n", __func__, dev_read_name(dev));
 
 	ret = clk_set_default_parents(dev, stage);
-	if (ret)
+	if (ret) {
+		printf("clk_set_default_parents failed for %s: %d\n",
+			dev_read_name(dev), ret);
 		return ret;
+	}
 
 	ret = clk_set_default_rates(dev, stage);
-	if (ret < 0)
+	if (ret < 0) {
+		printf("clk_set_default_rates failed for %s: %d\n",
+			dev_read_name(dev), ret);
 		return ret;
+	}
 
 	return 0;
 }

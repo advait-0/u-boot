@@ -61,7 +61,7 @@ int video_bridge_check_attached(struct udevice *dev)
 
 int video_bridge_check_timing(struct udevice *dev, struct display_timing *timing)
 {
-	printf("Entered video_bridge_check_timing");
+	printf("Entered video_bridge_check_timing\n");
 	struct video_bridge_ops *ops = video_bridge_get_ops(dev);
 
 	if (ops->check_timing)

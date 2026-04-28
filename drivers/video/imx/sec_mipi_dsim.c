@@ -724,6 +724,10 @@ static int sec_mipi_dsim_calc_pmsk(struct sec_mipi_dsim *dsim)
 			continue;
 
 		for (p = pr_new.min; p <= pr_new.max; p++) {
+
+			uint64_t fvco_check = DIV_ROUND_CLOSEST_ULL((uint64_t)m * fin, p);
+			if (fvco_check < fvco_range.min || fvco_check > fvco_range.max)
+				continue;
 			/* s = order_pow_of_two((m * Fin) / (p * Fout)) */
 			pfout = (uint64_t)p * fout;
 			raw_s = DIV_ROUND_CLOSEST_ULL(mfin, pfout);
@@ -757,6 +761,19 @@ static int sec_mipi_dsim_calc_pmsk(struct sec_mipi_dsim *dsim)
 		return -EINVAL;
 	}
 
+	{
+		uint64_t fvco_actual = DIV_ROUND_CLOSEST_ULL(
+			(uint64_t)best_m * fin, best_p);
+		if (fvco_actual < fvco_range.min || fvco_actual > fvco_range.max) {
+			printf("DSIM PLL: Fvco=%llu KHz out of range [%u, %u]\n",
+			       fvco_actual, fvco_range.min, fvco_range.max);
+			return -EINVAL;
+		}
+		printf("DSIM PLL: Fvco=%llu KHz Fout=%llu KHz P=%u M=%u S=%u\n",
+		       fvco_actual, (uint64_t)best_m * fin / best_p / (1 << best_s),
+		       best_p, best_m, best_s);
+	}
+
 	dsim->p = best_p;
 	dsim->m = best_m;
 	dsim->s = best_s;
@@ -771,8 +788,12 @@ static int sec_mipi_dsim_calc_pmsk(struct sec_mipi_dsim *dsim)
 
 static int sec_mipi_dsim_config_pll(struct sec_mipi_dsim *dsim)
 {
+	printf("Entered sec_mipi_dsim_pll\n");
 	int ret;
 	uint32_t pllctrl = 0, status, data_lanes_en, stop;
+	/* In whatever function calls sec_mipi_dsim_config_pll, print: */
+	printf("DSIM: bit_clk=%llu max_data_rate=%llu lanes=%u\n",
+       dsim->bit_clk, dsim->max_data_rate, dsim->lanes);
 
 	dsim_write(dsim, 0x8000, DSIM_PLLTMR);
 
@@ -782,6 +803,11 @@ static int sec_mipi_dsim_config_pll(struct sec_mipi_dsim *dsim)
 	dsim_write(dsim, pllctrl, DSIM_PLLCTRL);
 
 	ret = sec_mipi_dsim_wait_pll_stable(dsim);
+	printf("DSIM PLL: pms=0x%08x P=%u M=%u S=%u\n",
+           dsim->pms,
+           (dsim->pms >> 13) & 0x3f,
+           (dsim->pms >> 3)  & 0x3ff,
+           (dsim->pms >> 0)  & 0x7);
 	if (ret) {
 		printf("wait for pll stable time out\n");
 		return ret;

@@ -134,6 +134,44 @@ int ofnode_graph_get_endpoint_count(ofnode node)
 	return num;
 }
 
+// /**
+//  * ofnode_graph_get_remote_port_parent() - get remote port's parent ofnode
+//  * @endpoint: ofnode of a local endpoint
+//  *
+//  * Return: device ofnode associated with endpoint linked to local endpoint.
+//  */
+ofnode ofnode_graph_get_remote_port_parent(ofnode endpoint)
+{
+	ofnode remote_endpoint = ofnode_graph_get_remote_endpoint(endpoint);
+	if (!ofnode_valid(remote_endpoint)) {
+		log_debug("%s: remote endpoint is not found\n", __func__);
+		return ofnode_null();
+	}
+
+	return ofnode_graph_get_port_parent(remote_endpoint);
+}
+
+// /**
+//  * ofnode_graph_get_remote_node() - get remote parent ofnode for given port/endpoint
+//  * @parent: parent ofnode containing graph port/endpoint
+//  * @port: identifier (value of reg property) of the parent port ofnode
+//  * @endpoint: identifier (value of reg property) of the endpoint ofnode
+//  *
+//  * Return: device ofnode associated with endpoint linked to local endpoint.
+//  */
+ofnode ofnode_graph_get_remote_node(ofnode parent, int port, int endpoint)
+{
+	ofnode endpoint_ofnode;
+
+	endpoint_ofnode = ofnode_graph_get_endpoint_by_regs(parent, port, endpoint);
+	if (!ofnode_valid(endpoint_ofnode)) {
+		log_debug("%s: endpoint is not found\n", __func__);
+		return ofnode_null();
+	}
+
+	return ofnode_graph_get_remote_port_parent(endpoint_ofnode);
+}
+
 int ofnode_graph_parse_endpoint(ofnode node,
 			    struct of_endpoint *endpoint)
 {
@@ -214,17 +252,17 @@ ofnode ofnode_graph_get_port_parent(ofnode node)
 	return node;
 }
 
-ofnode ofnode_graph_get_remote_port_parent(ofnode node)
-{
-	ofnode np, pp;
+// ofnode ofnode_graph_get_remote_port_parent(ofnode node)
+// {
+// 	ofnode np, pp;
 
-	/* Get remote endpoint node. */
-	np = ofnode_graph_get_remote_endpoint(node);
+// 	/* Get remote endpoint node. */
+// 	np = ofnode_graph_get_remote_endpoint(node);
 
-	pp = ofnode_graph_get_port_parent(np);
+// 	pp = ofnode_graph_get_port_parent(np);
 
-	return pp;
-}
+// 	return pp;
+// }
 
 int find_device_by_ofnode(ofnode node, struct udevice **pdev)
 {
