@@ -93,21 +93,31 @@ static int imx_sec_dsim_set_backlight(struct udevice *dev, int percent)
 
 static int imx_sec_dsim_probe(struct udevice *dev)
 {
-	printf("Entered imx sec dsim probe\n");
-	struct clk clk;
-	int ret;
+    struct clk clk;
+    int ret;
 
-	ret = clk_get_by_index(dev, 0, &clk);
-	printf("DSIM clk get ret = %d\n", ret);
+    /* Directly deassert MIPI PHY1 reset in media blk-ctrl.
+     * BLK_MIPI_RESET_DIV is at offset 0x8 from blk-ctrl base 0x32ec0000.
+     * BIT(17) = MIPI DSI PHY1 reset, must be SET to release reset
+     * (the register is "reset divider" not "reset assert" — set=released) */
+    void __iomem *blk_ctrl_mipi_rst = (void __iomem *)0x32ec0008;
+    u32 val = readl(blk_ctrl_mipi_rst);
+    printf("BLK_MIPI_RESET_DIV before = 0x%08x\n", val);
+    val |= BIT(17);   /* set bit to RELEASE reset */
+    writel(val, blk_ctrl_mipi_rst);
+    printf("BLK_MIPI_RESET_DIV after  = 0x%08x\n", readl(blk_ctrl_mipi_rst));
+    udelay(10);
 
-	ret = clk_enable(&clk);
-	printf("DSIM clk enable ret = %d\n", ret);
-	struct imx_sec_dsim_priv *priv = dev_get_priv(dev);
-	struct mipi_dsi_device *device = &priv->device;
+    ret = clk_get_by_index(dev, 0, &clk);
+    if (ret)
+        return ret;
+    ret = clk_enable(&clk);
+    if (ret)
+        return ret;
 
-	device->dev = dev;
-
-	return 0;
+    struct imx_sec_dsim_priv *priv = dev_get_priv(dev);
+    priv->device.dev = dev;
+    return 0;
 }
 
 static int imx_sec_dsim_remove(struct udevice *dev)
@@ -158,7 +168,7 @@ U_BOOT_DRIVER(imx_sec_dsim) = {
 	.name				= "imx_sec_dsim",
 	.id				= UCLASS_VIDEO_BRIDGE,
 	.of_match			= imx_sec_dsim_ids,
-	.flags				= DM_FLAG_DEFAULT_PD_CTRL_OFF,
+	// .flags				= DM_FLAG_DEFAULT_PD_CTRL_OFF,
 	.bind				= dm_scan_fdt_dev,
 	.remove 			= imx_sec_dsim_remove,
 	.probe				= imx_sec_dsim_probe,

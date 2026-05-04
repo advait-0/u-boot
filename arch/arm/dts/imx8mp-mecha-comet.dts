@@ -642,6 +642,11 @@
 
 &mipi_dsi {
     status = "okay";
+    samsung,esc-clock-frequency = <10000000>;
+
+    assigned-clocks = <&clk IMX8MP_CLK_MEDIA_MIPI_PHY1_REF>;
+    assigned-clock-parents = <&clk IMX8MP_VIDEO_PLL1_OUT>;
+    assigned-clock-rates = <24000000>;
 
     ports {
         port@0 {
@@ -649,7 +654,6 @@
                 remote-endpoint = <&lcdif1_to_dsim>;
             };
         };
-
         port@1 {
             dsim_to_ddic: endpoint {
                 remote-endpoint = <&ddic_from_dsim>;

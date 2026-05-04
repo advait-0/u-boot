@@ -1188,7 +1188,7 @@ static void sec_mipi_dsim_config_clkctrl(struct sec_mipi_dsim *dsim)
 
 	clkctrl |= CLKCTRL_SET_ESCPRESCALER(esc_prescaler);
 
-	printf("DSIM clkctrl 0x%x\n", clkctrl);
+	debug("DSIM clkctrl 0x%x\n", clkctrl);
 
 	dsim_write(dsim, clkctrl, DSIM_CLKCTRL);
 	int timeout = 1000;
@@ -1288,33 +1288,6 @@ static int sec_mipi_dsim_bridge_clk_set(struct sec_mipi_dsim *dsim_host)
 	return 0;
 }
 
-#define MEDIA_BLK_CTRL_BASE   0x32F10000
-#define BLK_MIPI_RESET_DIV    0x8
-#define MIPI_PHY_RST          BIT(17)
-
-void force_mipi_phy_reset(void)
-{
-    void __iomem *base = (void __iomem *)MEDIA_BLK_CTRL_BASE;
-    u32 val;
-
-    val = readl(base + BLK_MIPI_RESET_DIV);
-    printf("PHY reset before = 0x%x\n", val);
-
-    /* 1. ASSERT reset */
-    val &= ~MIPI_PHY_RST;
-    writel(val, base + BLK_MIPI_RESET_DIV);
-
-    udelay(5);
-
-    /* 2. DEASSERT reset */
-    val |= MIPI_PHY_RST;
-    writel(val, base + BLK_MIPI_RESET_DIV);
-
-    udelay(10);
-
-    printf("PHY reset after = 0x%x\n", readl(base + BLK_MIPI_RESET_DIV));
-}
-
 static int sec_mipi_dsim_bridge_prepare(struct sec_mipi_dsim *dsim_host)
 {
 	printf("Enter sec_mipi_dsim_bridge_prepare\n");
@@ -1329,8 +1302,6 @@ static int sec_mipi_dsim_bridge_prepare(struct sec_mipi_dsim *dsim_host)
 
 	/* config dsim dpi */
 	sec_mipi_dsim_config_dpi(dsim_host);
-
-	force_mipi_phy_reset();
 
 	/* config dsim pll */
 	ret = sec_mipi_dsim_config_pll(dsim_host);
