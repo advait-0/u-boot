@@ -27,6 +27,8 @@ obj-$(CONFIG_$(PHASE_)SIMPLE_PANEL) += simple_panel.o
 obj-$(CONFIG_VIDEO_LOGO) += u_boot_logo.bmp.o
 obj-$(CONFIG_$(PHASE_)BMP) += bmp.o
 
+obj-$(CONFIG_VIDEO_LINK) += video_link.o
+
 endif
 
 obj-$(CONFIG_BACKLIGHT_AAT2870) += aat2870_backlight.o
@@ -61,7 +63,6 @@ obj-$(CONFIG_VIDEO_LCD_ENDEAVORU) += endeavoru-panel.o
 obj-$(CONFIG_VIDEO_LCD_HIMAX_HX8394) += himax-hx8394.o
 obj-$(CONFIG_VIDEO_LCD_HITACHI_TX10D07VM0BAA) += hitachi-tx10d07vm0baa.o
 obj-$(CONFIG_VIDEO_LCD_HITACHI_TX18D42VM) += hitachi_tx18d42vm_lcd.o
-obj-$(CONFIG_VIDEO_LCD_ILITEK_ILI9806E) += ilitek-ili9806e.o
 obj-$(CONFIG_VIDEO_LCD_LG_LD070WX3) += lg-ld070wx3.o
 obj-$(CONFIG_VIDEO_LCD_LG_LH400WV3) += lg-lh400wv3-sd04.o
 obj-$(CONFIG_VIDEO_LCD_MOT) += mot-panel.o
@@ -89,7 +90,7 @@ obj-$(CONFIG_VIDEO_SANDBOX_SDL) += sandbox_sdl.o
 obj-$(CONFIG_VIDEO_SIMPLE) += simplefb.o
 obj-$(CONFIG_VIDEO_VESA) += vesa.o
 obj-$(CONFIG_VIDEO_SEPS525) += seps525.o
-obj-$(CONFIG_VIDEO_ZYNQMP_DPSUB) += zynqmp/
+obj-$(CONFIG_VIDEO_AMOLED_DDIC_CH13726A) += ddic-ch13726a.o
 
 obj-y += bridge/
 obj-y += sunxi/
