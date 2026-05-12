@@ -375,13 +375,6 @@ static inline oftree oftree_from_np(struct device_node *root)
 	return tree;
 }
 
-/* Dummy put for Linux compat */
-static inline void ofnode_put(ofnode node)
-{
-	if (ofnode_is_np(node))
-		of_node_put(node.np);
-}
-
 /**
  * oftree_dispose() - Dispose of an oftree
  *
@@ -596,25 +589,6 @@ int ofnode_read_u32_array(ofnode node, const char *propname,
 			  u32 *out_values, size_t sz);
 
 /**
- * ofnode_read_u64_array() - Find and read an array of 64 bit integers
- *
- * @node:	valid node reference to read property from
- * @propname:	name of the property to read
- * @out_values:	pointer to return value, modified only if return value is 0
- * @sz:		number of array elements to read
- * Return: 0 on success, -EINVAL if the property does not exist,
- * -ENODATA if property does not have a value, and -EOVERFLOW if the
- * property data isn't large enough
- *
- * Search for a property in a device node and read 64-bit value(s) from
- * it.
- *
- * The out_values is modified only if a valid u64 value can be decoded.
- */
-int ofnode_read_u64_array(ofnode node, const char *propname,
-			  u64 *out_values, size_t sz);
-
-/**
  * ofnode_read_bool() - read a boolean value from a property
  *
  * @node:	valid node reference to read property from
@@ -644,6 +618,12 @@ ofnode ofnode_find_subnode(ofnode node, const char *subnode_name);
  * subnode)
  */
 ofnode ofnode_find_subnode_unit(ofnode node, const char *subnode_name);
+ofnode ofnode_graph_get_remote_port_parent(ofnode endpoint);
+ofnode ofnode_graph_get_remote_node(ofnode parent, int port, int endpoint);
+ofnode ofnode_graph_get_remote_endpoint(ofnode node);
+ofnode ofnode_graph_get_port_parent(ofnode node);
+ofnode ofnode_graph_get_endpoint_by_regs(
+	const ofnode parent, int port_reg, int reg);
 
 #if CONFIG_IS_ENABLED(DM_INLINE_OFNODE)
 #include <asm/global_data.h>
@@ -678,30 +658,6 @@ static inline ofnode ofnode_next_subnode(ofnode node)
 		fdt_next_subnode(gd->fdt_blob, ofnode_to_offset(node)));
 }
 #else
-
-/**
- * ofnode_count_elems_of_size() - count the number of elements of size @elem_size
- * in the property @propname.
- *
- * @node: ofnode to check
- * @propname: the name of the property to count
- * @elem_size: the size of each element
- *
- * Returns: the number of elements or -EINVAL if the property size is not a
- * multiple of elem_size.
- */
-int ofnode_count_elems_of_size(ofnode node, const char *propname, int elem_size);
-
-static inline int ofnode_count_u32_elems(ofnode node, const char *propname)
-{
-	return ofnode_count_elems_of_size(node, propname, 4);
-}
-
-static inline int ofnode_count_u64_elems(ofnode node, const char *propname)
-{
-	return ofnode_count_elems_of_size(node, propname, 8);
-}
-
 /**
  * ofnode_is_enabled() - Checks whether a node is enabled.
  * This looks for a 'status' property. If this exists, then returns true if
