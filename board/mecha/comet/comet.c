@@ -26,7 +26,7 @@
 #include <spl.h>
 #include <asm/mach-imx/dma.h>
 #include <power/pmic.h>
-#include "../../freescale/common/tcpc.h"
+#include "../../nxp/common/tcpc.h"
 #include <usb.h>
 #include <dwc3-uboot.h>
 #include <dm/uclass-internal.h>
@@ -41,6 +41,10 @@ DECLARE_GLOBAL_DATA_PTR;
 
 #define UART_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_FSEL1)
 #define WDOG_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_ODE | PAD_CTL_PUE | PAD_CTL_PE)
+
+#define IMX_BOOT_IMAGE_GUID \
+	EFI_GUID(0x928b33bc, 0xe58b, 0x4247, 0x9f, 0x1d, \
+		 0x3b, 0xf1, 0xee, 0x1c, 0xda, 0xff)
 
 static iomux_v3_cfg_t const uart_pads[] = {
 	MX8MP_PAD_UART2_RXD__UART2_DCE_RX | MUX_PAD_CTRL(UART_PAD_CTRL),
@@ -95,7 +99,7 @@ int board_early_init_f(void)
 
 int ft_board_setup(void *blob, struct bd_info *bd)
 {
-	int ret, node;
+	int ret;
 	int banks = 1;
 	u64 base[CONFIG_NR_DRAM_BANKS];
 	u64 size[CONFIG_NR_DRAM_BANKS];

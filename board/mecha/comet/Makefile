@@ -5,7 +5,7 @@
 #
 
 obj-y += comet.o
-obj-y += ../../freescale/common/
+obj-y += ../../nxp/common/
 
 ifdef CONFIG_XPL_BUILD	
 obj-y += spl.o
