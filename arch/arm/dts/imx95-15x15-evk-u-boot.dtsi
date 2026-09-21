@@ -29,19 +29,19 @@
 };
 
 &{/binman/m33-oei-ddrfw/imx-lpddr/imx-lpddr-imem} {
-	filename = "lpddr4x_imem_v202409.bin";
+	filename = "lpddr5_imem_v202409.bin";
 };
 
 &{/binman/m33-oei-ddrfw/imx-lpddr/imx-lpddr-dmem} {
-	filename = "lpddr4x_dmem_v202409.bin";
+	filename = "lpddr5_dmem_v202409.bin";
 };
 
 &{/binman/m33-oei-ddrfw/imx-lpddr-qb/imx-lpddr-imem-qb} {
-	filename = "lpddr4x_imem_qb_v202409.bin";
+	filename = "lpddr5_imem_qb_v202409.bin";
 };
 
 &{/binman/m33-oei-ddrfw/imx-lpddr-qb/imx-lpddr-dmem-qb} {
-	filename = "lpddr4x_dmem_qb_v202409.bin";
+	filename = "lpddr5_dmem_qb_v202409.bin";
 };
 
 &scmi_iomuxc {
