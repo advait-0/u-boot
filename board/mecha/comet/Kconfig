@@ -1,0 +1,12 @@
+if TARGET_IMX95_15X15_MECHA_COMET
+
+config SYS_BOARD
+	default "comet"
+
+config SYS_VENDOR
+	default "mecha"
+
+config SYS_CONFIG_NAME
+	default "comet"
+
+endif

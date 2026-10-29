@@ -331,8 +331,15 @@ config TARGET_IMX943_ORANGEBOX
 	imply BOOTSTD_BOOTCOMMAND
 	imply BOOTSTD_FULL
 
+config TARGET_IMX95_15X15_MECHA_COMET
+	bool "imx95_15x15_mecha_comet"
+	select IMX95
+	imply BOOTSTD_BOOTCOMMAND
+	imply BOOTSTD_FULL
+
 endchoice
 
+source "board/mecha/comet/Kconfig"
 source "board/nxp/imx91_evk/Kconfig"
 source "board/nxp/imx91_frdm_imx91s/Kconfig"
 source "board/nxp/imx91_qsb/Kconfig"
